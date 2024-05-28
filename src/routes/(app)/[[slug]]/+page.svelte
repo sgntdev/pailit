@@ -67,7 +67,7 @@
 	</p>
 {:else}
 	<p class="mb-4 flex items-center justify-center text-2xl font-semibold dark:text-white lg:mb-6">
-		Welcome to PKPU
+		Welcome to Pailit
 	</p>
 	<Card size="sm" padding="lg">
 		<form class="flex flex-col space-y-6" on:submit|preventDefault={handleSubmit}>
