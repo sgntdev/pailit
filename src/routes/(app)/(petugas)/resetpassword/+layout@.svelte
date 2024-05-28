@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>PKPU</title>
+	<title>Pailit</title>
 </svelte:head>
 <main class="flex min-h-screen flex-col items-center justify-center">
 	<slot />

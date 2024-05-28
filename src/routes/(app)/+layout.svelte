@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>PKPU</title>
+	<title>Pailit</title>
 </svelte:head>
 <nav
 	data-sveltekit-reload
