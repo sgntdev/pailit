@@ -54,6 +54,7 @@
 	const tagihanByDebitor = derived([chooseDebitor, tagihan], ([$chooseDebitor, $tagihan]) =>
 		$chooseDebitor == null ? $tagihan : $tagihan.filter((item) => item.debitorId === $chooseDebitor)
 	);
+
 	//Edit
 	let dataEdit = {
 		sifatTagihanId: '',
@@ -314,6 +315,33 @@
 	const clearToastData = () => {
 		toastData = null;
 	};
+
+	let showCalculate = false;
+	let loadingCalculate = false;
+	let dataCalculate;
+
+	const fetchProrate = async () => {
+		loadingCalculate = true;
+		try {
+			const response = await fetch(`/api/calculateprorate/${$chooseDebitor}`, {
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`
+				}
+			});
+			data = await response.json();
+			console.log(data);
+			return data.data;
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		} finally {
+			loadingCalculate = false;
+		}
+	};
+	const calculateProrate = async () => {
+		showCalculate = true;
+		dataCalculate = await fetchProrate();
+	};
 </script>
 
 {#if showToast}
@@ -350,7 +378,7 @@
 			</caption>
 		</div>
 
-		{#if tagihan.length === 0}
+		{#if $tagihanByDebitor.length === 0}
 			<div
 				class="border-1 flex w-full items-center justify-center rounded-md border border-gray-300 py-40"
 			>
@@ -418,7 +446,6 @@
 									<DropdownItem on:click={() => toggleRow(index)}>Revisi</DropdownItem>
 								</Dropdown>
 							</TableBodyCell>
-							<TableBodyCell></TableBodyCell>
 						</TableBodyRow>
 						{#if openRow === index}
 							{#if tagihanInputsByRow[index].length > 0}
@@ -636,6 +663,60 @@
 				</TableBody>
 			</Table>
 		{/if}
+	</div>
+	{#if showCalculate}
+		<div
+			class="min-h-max overflow-hidden rounded-lg border border-gray-200 p-8 dark:border-gray-700"
+		>
+			{#if loadingCalculate}
+				<div class="flex items-center justify-center">
+					<Spinner color="blue" size={10} />
+				</div>
+			{:else if dataCalculate}
+				<Table>
+					<TableHead>
+						<TableHeadCell>No</TableHeadCell>
+						<TableHeadCell>Nama Kreditur</TableHeadCell>
+						<TableHeadCell>Tagihan</TableHeadCell>
+						<TableHeadCell>Prorate</TableHeadCell>
+						<TableHeadCell>Hasil</TableHeadCell>
+						<TableHeadCell>Asset Laku</TableHeadCell>
+					</TableHead>
+					<TableBody tableBodyClass="divide-y">
+						{#each dataCalculate?.Tagihan as data, index (data)}
+							<TableBodyRow>
+								<TableBodyCell style="display: flex; padding-top: 24px; gap: 4px;"
+									>{index + 1}
+								</TableBodyCell>
+								<TableBodyCell>{data.Kreditor.nama}</TableBodyCell>
+								<TableBodyCell>Rp. {formatPrice(data.total)}</TableBodyCell>
+								<TableBodyCell>{data.prorate}%</TableBodyCell>
+								<TableBodyCell>Rp. {formatPrice(data.hasil)}</TableBodyCell>
+								{#if index === 0}
+									<TableBodyCell rowSpan={dataCalculate.Tagihan.length}
+										>Rp. {formatPrice(dataCalculate.AssetSelling[0].sellingPrice)}</TableBodyCell
+									>
+								{/if}
+							</TableBodyRow>
+						{/each}
+					</TableBody>
+					<tfoot>
+						<tr class="bg-gray-50 font-semibold text-gray-900 dark:text-white">
+							<th scope="row" class="px-6 py-3 text-center text-base" colspan="2">Total</th>
+							<td class="px-6 py-3">Rp. {formatPrice(dataCalculate.totalSum)}</td>
+							<td class="px-6 py-3">100%</td>
+							<td class="px-6 py-3" colspan="2">Rp. {formatPrice(dataCalculate.hasilSum)}</td>
+						</tr>
+					</tfoot>
+				</Table>
+			{:else}
+				<p>Loading or no data available.</p>
+			{/if}
+		</div>
+	{/if}
+
+	<div class="flex justify-end">
+		<Button on:click={() => calculateProrate()}>Calculate Prorate</Button>
 	</div>
 </div>
 <!-- delete modal -->
