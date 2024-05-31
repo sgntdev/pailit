@@ -33,13 +33,14 @@ model Role {
 }
 
 model Debitor {
-  id             Int       @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   nama           String
   tglSidang      String
   tempatSidang   String
-  uid            String    @unique @db.VarChar(5)
+  uid            String         @unique @db.VarChar(5)
   pengurusAccess Int[]
   Tagihan        Tagihan[]
+  AssetSelling   AssetSelling[]
 }
 
 model Kreditor {
@@ -136,4 +137,11 @@ model tagihanItem {
   updatedAt      DateTime     @updatedAt
   SifatTagihan   SifatTagihan @relation(fields: [sifatTagihanId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Tagihan        Tagihan      @relation(fields: [tagihanId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model AssetSelling {
+  id           Int     @id @default(autoincrement())
+  debitorId    Int
+  sellingPrice String
+  Debitor      Debitor @relation(fields: [debitorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
