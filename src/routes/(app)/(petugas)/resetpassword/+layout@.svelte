@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>Pailit</title>
+	<title>PAILIT</title>
 </svelte:head>
 <main class="flex min-h-screen flex-col items-center justify-center">
 	<slot />

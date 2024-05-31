@@ -144,9 +144,9 @@ export async function POST({ request }) {
 		let html = `<h2>Hi!</h2><p>Click the following link to access the form: <a href="${link}">${link}</a></p>`;
 
 		const message = {
-			from: '"pkpu.co.id" <fotoarchive8@gmail.com>',
+			from: '"pailit.co.id" <fotoarchive8@gmail.com>',
 			to: email,
-			bcc: 'www.pkpu.co.id',
+			bcc: 'www.pailit.co.id',
 			subject: 'Link to access Form Tagihan',
 			text: 'INI BODY',
 			html: html

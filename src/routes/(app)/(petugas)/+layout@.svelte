@@ -23,7 +23,9 @@
 		BadgeCheckSolid,
 		BadgeCheckOutline,
 		InboxFullOutline,
-		InboxFullSolid
+		InboxFullSolid,
+		CashOutline,
+		CashSolid
 	} from 'flowbite-svelte-icons';
 	let showSidebar = false;
 	const handleSidebar = () => {
@@ -63,7 +65,7 @@
 </script>
 
 <svelte:head>
-	<title>PKPU</title>
+	<title>PAILIT</title>
 </svelte:head>
 
 <nav
@@ -98,7 +100,7 @@
 				<a href="/" class="ms-2 flex md:me-24">
 					<span
 						class="self-center whitespace-nowrap text-xl font-semibold dark:text-white sm:text-2xl"
-						>PKPU</span
+						>PAILIT</span
 					>
 				</a>
 			</div>
@@ -235,6 +237,19 @@
 							<BadgeCheckOutline size="md" class="" />
 						{/if}
 						<span class="ms-3 flex-1 whitespace-nowrap">Verify Password</span>
+					</a>
+				</li>
+				<li>
+					<a
+						href={`/assetselling`}
+						class={`${activeUrl.startsWith(`/assetselling`) ? 'bg-gray-100 font-semibold text-gray-900' : 'font-medium'} group flex items-center rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:hover:bg-gray-700`}
+					>
+						{#if activeUrl.startsWith(`/assetselling`)}
+							<CashSolid size="md" class="" />
+						{:else}
+							<CashOutline size="md" class="" />
+						{/if}
+						<span class="ms-3 flex-1 whitespace-nowrap">Asset Selling</span>
 					</a>
 				</li>
 			{/if}

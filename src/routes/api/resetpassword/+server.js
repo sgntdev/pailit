@@ -94,9 +94,9 @@ export async function POST({ request }) {
 		let html = `<h2>Hi!</h2><p>Click the following link to access reset the verify password: <a href="${link}">${link}</a></p>`;
 
 		const message = {
-			from: '"pkpu.co.id" <fotoarchive8@gmail.com>',
+			from: '"pailit.co.id" <fotoarchive8@gmail.com>',
 			to: email,
-			bcc: 'www.pkpu.co.id',
+			bcc: 'www.pailit.co.id',
 			subject: 'Link to reset password verify Tagihan',
 			text: 'INI BODY',
 			html: html

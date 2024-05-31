@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Pailit</title>
+	<title>PAILIT</title>
 </svelte:head>
 <nav
 	data-sveltekit-reload
@@ -28,7 +28,7 @@
 				<a href="/" class="ms-2 flex md:me-24">
 					<span
 						class="self-center whitespace-nowrap text-xl font-semibold dark:text-white sm:text-2xl"
-						>PKPU</span
+						>PAILIT</span
 					>
 				</a>
 			</div>
