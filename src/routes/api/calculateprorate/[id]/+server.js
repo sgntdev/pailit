@@ -54,10 +54,11 @@ export async function GET({ request, params }) {
 
     let totalSum = 0;
     let hasilSum = 0;
+	let prorateSum = 0;
 	debitor.Tagihan = debitor.Tagihan.map(tagihan => {
-		const hutangPokok = parseFloat(tagihan.hutangPokok) || 0;
-		const bunga = parseFloat(tagihan.bunga) || 0;
-		const denda = parseFloat(tagihan.denda) || 0;
+		const hutangPokok = Number(tagihan.hutangPokok) || 0;
+		const bunga = Number(tagihan.bunga) || 0;
+		const denda = Number(tagihan.denda) || 0;
 		const total = hutangPokok + bunga + denda;
 		tagihan.total = total;
 		totalSum += total;
@@ -65,16 +66,18 @@ export async function GET({ request, params }) {
 	});
 
     debitor.Tagihan = debitor.Tagihan.map(tagihan => {
-		tagihan.prorate = Number(((tagihan.total / totalSum) * 100).toFixed(2));
-        tagihan.hasil = (Number((tagihan.prorate/100).toFixed(3)) * Number(debitor.AssetSelling[0].sellingPrice))
+		tagihan.prorate = ((tagihan.total / totalSum) * 100).toFixed(2);
+        tagihan.hasil = Math.round(Number((tagihan.prorate/100)) * Number(debitor.AssetSelling[0].sellingPrice))
         hasilSum += tagihan.hasil;
+        prorateSum += tagihan.prorate;
 		return tagihan;
 	});
 
 	const responseData = {
 		...debitor,
 		totalSum,
-        hasilSum
+        hasilSum,
+		prorateSum
 	};
 	return new Response(JSON.stringify({ success: true, message: 'Berhasil', data: responseData }));
 }
