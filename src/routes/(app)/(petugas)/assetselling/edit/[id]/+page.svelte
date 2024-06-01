@@ -66,7 +66,7 @@
 			<h1
 				class="text-xl font-semibold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl"
 			>
-				Tambah Debitor
+				Tambah Asset Terjual
 			</h1>
 			<form class="space-y-4 md:space-y-6" method="POST" on:submit|preventDefault={handleUpdateAsset}>
 				<div class="grid gap-4 sm:gap-6 md:grid-cols-2">
@@ -74,7 +74,7 @@
 						<label
 							for="debitorId"
 							class={`mb-2 block text-sm font-medium ${assetSelling.debitorId === '' && form?.errors?.find((error) => error.field === 'debitorId') ? 'text-red-700 dark:text-red-500' : 'text-gray-900 dark:text-white'}`}
-							>Sifat/Golongan Tagihan</label
+							>Debitor</label
 						>
 						<select
 							id="debitorId"
