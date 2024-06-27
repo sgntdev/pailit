@@ -51,6 +51,14 @@ export async function GET({ request, params }) {
 			}
 		);
 	}
+	if(debitor.AssetSelling.length < 1){
+		return new Response(
+			JSON.stringify({ success: false, code: 404, message: 'Asset terjual tidak ditemukan!' }),
+			{
+				status: 404
+			}
+		);
+	}
 
     let totalSum = 0;
     let hasilSum = 0;
@@ -79,5 +87,5 @@ export async function GET({ request, params }) {
         hasilSum,
 		prorateSum
 	};
-	return new Response(JSON.stringify({ success: true, message: 'Berhasil', data: responseData }));
+	return new Response(JSON.stringify({ success: true, message: 'Proses kalkulasi berhasil!', data: responseData }));
 }

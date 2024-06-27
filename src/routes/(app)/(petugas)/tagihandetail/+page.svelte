@@ -12,7 +12,6 @@
 		Indicator,
 		Button,
 		Spinner,
-		Toast,
 		Modal,
 		Dropdown,
 		DropdownItem,
@@ -28,11 +27,9 @@
 		EditSolid,
 		ExclamationCircleOutline,
 		MinusSolid,
-		CheckCircleSolid,
-		XCircleSolid,
 		DotsHorizontalOutline
 	} from 'flowbite-svelte-icons';
-
+	import { showToast } from '$lib/toastStore';
 	export let data;
 	const { token } = data.body;
 	const { sifatTagihanData } = data.body;
@@ -48,8 +45,6 @@
 	let editModal = false;
 	let deleteTargetId;
 	let deleteTargetTagihanId;
-	let showToast = false;
-	let toastData;
 
 	const tagihanByDebitor = derived([chooseDebitor, tagihan], ([$chooseDebitor, $tagihan]) =>
 		$chooseDebitor == null ? $tagihan : $tagihan.filter((item) => item.debitorId === $chooseDebitor)
@@ -64,15 +59,7 @@
 
 	onMount(() => {
 		if ($page.state.statusSuccess) {
-			showToast = true;
-			toastData = {
-				success: true,
-				message: $page.state.message
-			};
-			setTimeout(() => {
-				showToast = false;
-				clearToastData();
-			}, 2000);
+			showToast($page.state.message, 'success');
 		}
 	});
 
@@ -141,15 +128,7 @@
 					// Mengubah tagihanInputsByRow[rowIndex] menjadi array kosong
 					tagihanInputsByRow[index] = [];
 
-					showToast = true;
-					toastData = {
-						success: true,
-						message: result.message
-					};
-					setTimeout(() => {
-						showToast = false;
-						clearToastData();
-					}, 2000);
+					showToast(result.message, 'success');
 					const updatedDataResponse = await fetch('/api/tagihan', {
 						method: 'GET',
 						headers: {
@@ -160,15 +139,7 @@
 					const updatedData = await updatedDataResponse.json();
 					tagihan.set(updatedData.data);
 				} else {
-					showToast = true;
-					toastData = {
-						success: false,
-						message: result.message
-					};
-					setTimeout(() => {
-						showToast = false;
-						clearToastData();
-					}, 2000);
+					showToast(result.message, 'error');
 				}
 			} catch (err) {
 				console.error('client', err);
@@ -200,15 +171,7 @@
 			});
 			const result = await response.json();
 			if (result.success) {
-				showToast = true;
-				toastData = {
-					success: true,
-					message: result.message
-				};
-				setTimeout(() => {
-					showToast = false;
-					clearToastData();
-				}, 2000);
+				showToast(result.message, 'success');
 				const updatedDataResponse = await fetch('/api/tagihan', {
 					method: 'GET',
 					headers: {
@@ -219,15 +182,7 @@
 				const updatedData = await updatedDataResponse.json();
 				tagihan.set(updatedData.data);
 			} else {
-				showToast = true;
-				toastData = {
-					success: false,
-					message: result.message
-				};
-				setTimeout(() => {
-					showToast = false;
-					clearToastData();
-				}, 3000);
+				showToast(result.message, 'error');
 			}
 		} catch (error) {
 			console.error(error);
@@ -258,15 +213,7 @@
 					amount: ''
 				};
 
-				showToast = true;
-				toastData = {
-					success: true,
-					message: result.message
-				};
-				setTimeout(() => {
-					showToast = false;
-					clearToastData();
-				}, 2000);
+				showToast(result.message, 'success');
 				const updatedDataResponse = await fetch('/api/tagihan', {
 					method: 'GET',
 					headers: {
@@ -277,15 +224,7 @@
 				const updatedData = await updatedDataResponse.json();
 				tagihan.set(updatedData.data);
 			} else {
-				showToast = true;
-				toastData = {
-					success: false,
-					message: result.message
-				};
-				setTimeout(() => {
-					showToast = false;
-					clearToastData();
-				}, 2000);
+				showToast(result.message, 'error');
 			}
 		} catch (err) {
 			console.error('client', err);
@@ -312,10 +251,6 @@
 		deleteTargetTagihanId = idTagihan;
 	};
 
-	const clearToastData = () => {
-		toastData = null;
-	};
-
 	let showCalculate = false;
 	let loadingCalculate = false;
 	let dataCalculate;
@@ -330,7 +265,11 @@
 				}
 			});
 			data = await response.json();
-			console.log(data);
+			if (data.success) {
+				showToast(data.message, 'success');
+			} else {
+				showToast(data.message, 'error');
+			}
 			return data.data;
 		} catch (error) {
 			console.error('Error fetching data:', error);
@@ -339,27 +278,12 @@
 		}
 	};
 	const calculateProrate = async () => {
-		showCalculate = true;
 		dataCalculate = await fetchProrate();
+		if (dataCalculate) {
+			showCalculate = true;
+		}
 	};
 </script>
-
-{#if showToast}
-	<div transition:fly={{ x: 200 }} class="top-15 absolute end-5">
-		<Toast color={toastData?.success ? 'green' : 'red'} class="z-50 mb-4">
-			<svelte:fragment slot="icon">
-				{#if toastData?.success}
-					<CheckCircleSolid class="h-5 w-5" />
-					<span class="sr-only">Check icon</span>
-				{:else}
-					<XCircleSolid class="h-5 w-5" />
-					<span class="sr-only">Error icon</span>
-				{/if}
-			</svelte:fragment>
-			{toastData?.message}
-		</Toast>
-	</div>
-{/if}
 
 <div class="space-y-4">
 	<Breadcrumb aria-label="Default breadcrumb example" class="mb-4">
@@ -391,14 +315,12 @@
 				<TableHead>
 					<TableHeadCell>No</TableHeadCell>
 					<TableHeadCell>Nama Kreditur</TableHeadCell>
-					<TableHeadCell>Sifat/Golongan Tagihan</TableHeadCell>
+					<TableHeadCell>Sifat / Golongan Tagihan</TableHeadCell>
 					<TableHeadCell>Hutang Pokok</TableHeadCell>
 					<TableHeadCell>Bunga</TableHeadCell>
 					<TableHeadCell>Denda</TableHeadCell>
-					<!-- <TableHeadCell>Jumlah Tagihan Seluruhnya</TableHeadCell> -->
 					<TableHeadCell>Status</TableHeadCell>
 					<TableHeadCell>Tagihan</TableHeadCell>
-					<!-- <TableBodyCell>Action</TableBodyCell> -->
 				</TableHead>
 				<TableBody tableBodyClass="divide-y">
 					{#each $tagihanByDebitor as data, index (data)}
@@ -406,8 +328,8 @@
 							<TableBodyCell style="display: flex; padding-top: 24px; gap: 4px;"
 								>{index + 1}
 							</TableBodyCell>
-							<TableBodyCell>{data.Kreditor.nama}</TableBodyCell>
-							<TableBodyCell>{data.SifatTagihan.sifat}</TableBodyCell>
+							<TableBodyCell class="min-w-60 max-w-80 text-wrap">{data.Kreditor.nama}</TableBodyCell>
+							<TableBodyCell class="max-w-16">{data.SifatTagihan.sifat}</TableBodyCell>
 							<TableBodyCell>Rp. {formatPrice(parseFloat(data.hutangPokok))}</TableBodyCell>
 							<TableBodyCell>Rp. {formatPrice(parseFloat(data.bunga))}</TableBodyCell>
 							<TableBodyCell>Rp. {formatPrice(parseFloat(data.denda))}</TableBodyCell>
@@ -709,8 +631,6 @@
 						</tr>
 					</tfoot>
 				</Table>
-			{:else}
-				<p>Loading or no data available.</p>
 			{/if}
 		</div>
 	{/if}
